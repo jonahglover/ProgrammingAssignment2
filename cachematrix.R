@@ -1,58 +1,42 @@
-## make a cache
-cache <- matrixCache()
+# initialize cached matrix
+cacheMatrix <- FALSE
 
 makeCacheMatrix <- function(x = matrix()) {
-  cache$cache(x)
+ # solve inverse for x, save it as inverse
+ inverse <- solve(x)
+ 
+ # set parent environments "cacehMatrix" var to be our list with matrix and inverse 
+ cacheMatrix <<- list(inverse=inverse, matrix=x)
 }
 
 
-cacheSolve <- function(x, ...) {
-  cm <- cache$cache(x)
-  cm$inverse()
+cacheSolve <- function(x = matrix) {
+  # check to see if we've cached x alread
+  if(identical(x, cacheMatrix$matrix)){
+    print("Matrix is cached")
+    # return cached inverse if already cahced
+    cacheMatrix$inverse
+  }else{
+    # return non cached inverse if not cached already
+    print("Matrix is not cached")
+    solve(x)
+  }
 }
 
-####################################################################################
-
-cacheMatrix <- function(x = matrix()){
-  inverse <- solve(x)
-  getInverse <- function(){
-    inverse
-  }
-  get <- function(){
-    x
-  }
-  list(  
-    get = get,
-    inverse = getInverse
+test <- function(){
+  c <- matrix(
+    c(1,0,0,0,1,0,0,0,1),
+    nrow = 3,
+    ncol = 3
   )
-}
-
-# let x be a matrix with n cells
-matrixCache <- function() {
   
-  matrixTable <- list()
+  d <- matrix(
+    c(0,0,1,0,1,0,1,0,0),
+    nrow = 3,
+    ncol = 3
+  )
   
-  # O(n)
-  # hashed matrix looks like
-  # c1c2c3c4...cnnrow(n)ncol(n)
-  hashMatrix <- function(mat = matrix()){
-    hashStr <- vector()
-    for (cell in B){
-      hashStr <- paste(c(hashStr, cell), collapse="")
-    }
-    hashStr <- paste(c(hashStr, nrow(B)), collapse="")
-    hashStr <- paste(c(hashStr, ncol(B)), collapse="")
-    hashStr
-  }
-  
-  # returns a cacheMatrix of x
-  cache <- function(x = matrix()){
-    key <- hashMatrix(x)
-    if(is.null(matrixTable[[key]])){
-      matrixTable[[key]] <- cacheMatrix(x)
-    }
-    # matrixTable[[key]]
-  }
-  
-  list(cache=cache)
+  makeCacheMatrix(c)
+  print(cacheSolve(c))
+  print(cacheSolve(d))
 }
